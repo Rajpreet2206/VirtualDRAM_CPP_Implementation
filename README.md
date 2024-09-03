@@ -32,3 +32,59 @@ The **PIMOperation** class is a crucial component in the Processing-in-Memory (P
 4. When **controller.executeAll()** is called in the main file, it triggers the **execute** method of the queued **BitWiseAND** operation, which performs the bitwise AND on the data in the **VirtualDRAM**.
 5. Finally, the main file reads and prints the results of this operation from the **VirtualDRAM**.  
 
+## Code Description
+```cpp
+class VirtualDRAM {
+private:
+    std::vector<uint8_t> memory;
+    size_t size;
+```
+
+### This class simulates a Dynamic Random Access Memory (DRAM) using a vector of 8-bit unsigned integers (uint8_t). 
+- **memory**: A vector of uint8_t, representing the actual storage.
+- **size**: Stores the total size of the memory in bytes.
+
+```cpp
+public:
+    VirtualDRAM(size_t size_in_bytes): size(size_in_bytes), memory(size_in_bytes,0){}
+```
+
+The constructor initializes the memory with a specified size, filling it with zeroes.
+
+```cpp
+void write(size_t address, uint8_t values){
+        if(address < size) memory[address] = value;
+    }
+```
+- **write** method: Writes a byte value to a specific address if the address is within bounds.
+
+```cpp
+uint8_t read(size_t address) const {
+        return (address < size) ? memory[address] : 0;
+    }
+```
+- **read** method: Reads a byte from a specific address and returns 0 if the address is out of bounds.
+
+```cpp
+class PIMOperation {
+public:
+    virtual void execute(VirtualDRAM& dram) = 0;
+    virtual ~PIMOperation() = default;
+};
+```
+The PIMOperation class is shown above for Processing-in-Memory operations.
+- **execute**: A pure virtual function that subclasses must implement to define their operation.
+- Virtual destructor: Allows proper cleanup of derived classes through base class pointer.
+
+The BitWiseAND class below inherits from PIMOperation and implements a bitwise AND operation.
+```cpp
+class BitWiseAND: public PIMOperation {
+private:
+    size_t start_address;
+    size_t end_address;
+public:
+    BitWiseAND(size_t start, size_t end): start_address(start), end_address(end){}
+```
+- **start_address** and **end_address**: Define the range of memory addresses to operate on. The constructor initializes the start and end addresses for the operation.
+
+### This design allows for easy extension of the system with new types of PIM operations by creating new classes that inherit from **PIMOperation**. The separation of the memory interface **(VirtualDRAM)** from the operations **(PIMOperation and its subclasses)** provides flexibility and modularity in the system design. 
