@@ -21,7 +21,9 @@ Overall, the project demonstrates a basic usage of a Virtual DRAM and a PIM Cont
 
 The class **VirtualDRAM** represents a virtual DRAM (Dynamic Random Access Memory) using **std::vector<uint_8>** to simulate memory storage. The constructor initializes the memory with a given size. It provides **write** and **read** methods to interact with the memory. In the main file, **VirtualDRAM dram(1024)** creates an instance of this class with 1024 bytes of memory. The main file uses **dram.write()** to store data and **dram.read()** to retrieve data. The **PIMOperation** class is an abstract base class for Processing-in-Memory operations. It declares a pure virtual **execute** method that subclass must implement. This is a base class for **BitWiseAND**. 
 
-The **BitWiseAND** class inherits from **PIMOperation**. It implements a bitwise AND operation on a range of memory addresses. The **execute** method performs the AND operation on pairs of adjacent memory locations. In the main file, **std::make_unique<BitWiseAND>(0,10) creates an instance of this class. This operation is queued in the PIMController and later executed.  
+The **BitWiseAND** class inherits from **PIMOperation**. It implements a bitwise AND operation on a range of memory addresses. The **execute** method performs the AND operation on pairs of adjacent memory locations. In the main file, **std::make_unique<BitWiseAND>(0,10) creates an instance of this class. This operation is queued in the PIMController and later executed. 
+
+The **PIMOperation** class is a crucial component in the Processing-in-Memory (PIM) system. The class manages a queue of PIM operations and executes them on a **VirtualDRAM** instance. It has a reference to a **VirtualDRAM** object and a queue of **PIMOperation** pointers. The constructor **PIMController(VirtualDRAM& dram_ref) : dram(dram_ref){}** takes to reference to a **VirtualDRAM** object, which it will use to execute operations. The method **queueOperation(std::unique_ptr<PIMOperation> op)** adds a new PIM operation to the queue. It takes ownership of the passed operation using a unique pointer. The method **executeAll()** executes all queued operations on the DRAM. It processes the queue until it's empty, executing each operation and then removing it fromt the queue. 
 
 ## Relationship between these classes and the main file:
 1. The main file creates a **VirtualDRAM** object and uses it to store and retrieve data.
@@ -29,3 +31,4 @@ The **BitWiseAND** class inherits from **PIMOperation**. It implements a bitwise
 3. The main file queues a **BitWiseAND** operation, which is a specific type of **PIMOperation**.
 4. When **controller.executeAll()** is called in the main file, it triggers the **execute** method of the queued **BitWiseAND** operation, which performs the bitwise AND on the data in the **VirtualDRAM**.
 5. Finally, the main file reads and prints the results of this operation from the **VirtualDRAM**.  
+
